@@ -1,0 +1,85 @@
+import React,{useState} from "react";
+import { useParams } from "react-router-dom";
+import { dummyShowsData,dummyDateTimeData } from "../assets/assets";
+import { StarIcon,Heart, PlayCircleIcon  } from "lucide-react";
+import timeFormat from "../lib/timeFormat";
+import DateSelect from "../components/dateSelect";
+import MovieCard from "../components/MovieCard";
+import { useNavigate } from "react-router-dom";
+import Loading from "../components/Loading";
+
+function MovieDetails(){
+    const {id} =useParams();
+    const [show,setShow]=useState(null);
+    const navigate=useNavigate();
+    React.useEffect(() => {
+        // Convert id from useParams to number for comparison
+        const showData = dummyShowsData.find(show => show.id === Number(id));
+        if (!showData) {
+            setShow(null);
+            return;
+        }
+        setShow({
+            movie: showData,
+            dateTime: dummyDateTimeData,
+        });
+    }, [id]);
+    if(!show || !show.movie){
+        return (<div className=" px-6 md:px-16 lg:px-40 pt-30 md:pt-50">
+        <Loading />
+        </div>)
+    }
+    return(
+        <div className=" px-6 md:px-16 lg:px-40 pt-30 md:pt-50">
+            <div className="flex flex-col md:flex-row gap-8 max-w-6xl mx-auto">
+                <img src={show.movie['poster_path']} alt={show.movie.title} className="max-md:mx-auto rounded-xl h-104 max-w-70 object-cover"/>
+                <div className="relative flex flex-col gap-3">
+                    <p className="text-primary">ENGLISH</p>
+                    <h1 className="text-4xl font-semibold max-w-96 text-balance">
+                        {show.movie.title}
+                    </h1>
+                    <div className="flex items-center gap-2 text-gray-300">
+                        <StarIcon className="text-red-500 fill-primary" />
+                        {show.movie.vote_average.toFixed(1)}User Rating
+                    </div>
+                    <p className="text-gray-400 mt-2 text-sm leading-tight max-w-xl">{show.movie.overview}</p>
+                    <p>{timeFormat(show.movie.runtime)} * {show.movie.genres.map( genre =>genre.name).join(",")}*{show.movie.release_date.split("-")[0]}</p>
+                    
+                    <div className="flex items-center flex-wrap gap-4 mt-4">
+                        <button className="flex items-center gap-2 px-7 py-3 text-sm bg-gray-800 hover:bg-gray-900 transition rounded-md font-medium cursor-pointer active:scale-95">
+                            <PlayCircleIcon className="w-5 h-5"/>Watch Trailer</button>
+                        <a href="#dateSelect" onClick={()=>navigate('#dateSelect')} className="px-10 py-3 text-sm bg-primary hover:bg-primary-dull transition rounded-md font-medium cursor-pointer active:scale-95">Buy Tickets</a>
+                        <button className="flex items-center gap-2 px-7 py-3 text-sm bg-gray-800 hover:bg-gray-900 transition rounded-md font-medium cursor-pointer active:scale-95"> <Heart className={`w-5 h-5`} /></button>
+                        
+                    </div>
+                </div>
+            </div>
+
+            <p className="text-lg font-medium mt-20">Your Favourite Cast</p>
+            <div className="overflow-x-auto no-scrollbar mt-8 pb-4">
+                <div className="flex items-center gap-4 w-max px-4">
+                    {show.movie.casts.slice(0,12).map((cast,index)=>(
+                        <div key={index} className="flex items-center gap-2 w-max px-4">
+                            <img src={cast.profile_path} alt={cast.name} className="w-14 h-15 rounded-full object-cover"/>
+                            <p className="text-gray-400 text-sm">{cast.name}</p>
+                        </div>
+                    ))}
+                </div>
+            </div>
+
+            <DateSelect dateTime={show.dateTime} id={id} />
+
+            <p className="text-lg font-medium mt-20 mb-8">You may also like</p>
+            <div className="grid grid-cols-2 gap-4">
+                {dummyShowsData.slice(0,4).map((show,index)=>(
+                    <MovieCard key={index} movie={show} />
+                ))}
+            </div>
+            <div className="flex justify-center mt-10">
+                <button onClick={()=>{navigate('/movies'); scrollTo(0,0)}} className="px-10 py-3 text-sm bg-primary hover:bg-primary-dull transition rounded-md font-medium cursor-pointer">Show more</button>
+            </div>
+        </div>
+    )
+}
+
+export default MovieDetails;
