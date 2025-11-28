@@ -20,7 +20,9 @@ const DateSelect = ({ dateTime,id }) => {
             <ChevronLeftIcon width={28} />
             <span className=" grid grid-cols-3 md:flex items-center space-between gap-2 flex-wrap md:max-w-lg text-sm font-light">
                 {Object.keys(dateTime).map((date)=>(
-                <button key={date} className={`flex flex-col items-center justify-center gap-2 aspect-square rounded-md bg-primary/10 py-2 px-4 text-sm font-light hover:bg-primary/20 cursor-pointer ${selectedDate===date ? "bg-primary/20 text-white" :"border border-primary/20" }`} onClick={()=>setSelectedDate(date)}>
+                <button key={date} className={`flex flex-col items-center justify-center gap-2 aspect-square rounded-md bg-primary/10 py-2 px-4 text-sm font-light  cursor-pointer ${selectedDate === date ? "bg-primary/80 text-white" :"border border-primary/20" }`} onClick={()=> {
+                    setSelectedDate(date);
+                }}>
                     <span>{new Date(date).getDate()}</span>
                     <span>{new Date(date).toLocaleDateString("en-US",{month:"short",year:"numeric"})}</span>
                 </button>

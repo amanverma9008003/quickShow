@@ -1,20 +1,32 @@
 import React,{useEffect, useState} from 'react'
-import { dummyBookingData } from '../../assets/assets';
 import Loading from "../../components/Loading";
 import Title from '../../components/admin/Title';
 import {dateFormat} from '../../lib/Dateformat'
+import { useAppContext } from '../../../context/AppContext';
+import toast from "react-hot-toast";
 const ListBooking = () => {
+
+    const {axios , getToken,user} = useAppContext();
     const [bookings, setBookings]=useState([]);
     const [isLoading, setIsLoading]=useState(true);
 
     const getAllBookings = async ()=>{
-        setBookings(dummyBookingData);
+        try {
+            const {data} = await axios.get('/api/admin/all-bookings',{headers: {Authorization: `Bearer ${ await getToken()}`}})
+            setBookings(data.bookings);
+            console.log(data.bookings);
+        } catch (error) {
+            console.log( "list booking error", error);
+            toast.error("Something went wrong in listbooking",error);
+        }
         setIsLoading(false)
     }
 
     useEffect(()=>{
+        if(user){
         getAllBookings();
-    },[])
+        }
+    },[user])
 
     return !isLoading? (
     <>
@@ -37,7 +49,7 @@ const ListBooking = () => {
                         <td className='p-2 min-w-45 pl-5'>{item.user.name}</td>
                         <td className='p-2'>{item.show.movie.title}</td>
                         <td className='p-2'>{dateFormat(item.show.showDateTime)}</td>
-                        <td className='p-2'>{Object.keys(item.bookedSeats).map(seat => item.bookedSeats[seat]).join(",")}</td>
+                        <td className='p-2'>{/*Object.keys(item.bookedSeats).map(seat => item.bookedSeats[seat]).join(",")*/ '0'}</td>
                         <td className='p-2'>&#8377;{item.amount}</td>
                     </tr>
                 ))}

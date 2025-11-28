@@ -2,29 +2,27 @@ import axios from 'axios';
 import Movie from '../models/Movie.js';
 import Show from '../models/Show.js';
 
-// Below is the code of d:\quickShow\server\controllers\showController.js 
+// Below is the code of d:\quickShow\server\controllers\showController.js
 export const getNowPlayingMovies = async(req,res)=>{
     try{
         const {data} = await axios.get('https://api.themoviedb.org/3/movie/now_playing',{
-            headers:{
-                accept: 'application/json',
-                Authorization: `Bearer ${process.env.TMDB_API_KEY}`
-            }
+            headers:{ Authorization: `Bearer ${process.env.TMDB_API_KEY}`, accept: 'application/json'},
         })
-        const movies =data.results
+        const movies =data.results;
         res.json({success:true,movies:movies})
-    }catch(err)
-    {
-        console.log(err)
-        res.json({success:false,message:err.message})
+
+    }catch(err){
+        console.log("error in getNowPlayingMovies",err)
+        res.json({success:false,message:`getNowPlayingMovies: ${err.message}`})
     }
 }
 
 export const addShow = async(req,res)=>{
     try{
-        console.log(req.body);
+        //console.log(req.body);
         const {movieId,showsInput,showPrice}=req.body;
         let movie=await Movie.findOne({_id:movieId});
+        //console.log(movieId,showsInput,showPrice,movie);
         if(!movie){
             const [movieDetailsResponse,movieCreditsResponse]=await Promise.all([axios.get(`https://api.themoviedb.org/3/movie/${movieId}`, {headers:{
                 Authorization: `Bearer ${process.env.TMDB_API_KEY}`
@@ -56,7 +54,7 @@ export const addShow = async(req,res)=>{
         const showsToCreate = [];
         showsInput.forEach(show => {
             const showDate = show.date;
-            show.time.forEach((time)=>{
+            show.times.forEach((time)=>{
                 const dateTimeString = `${showDate}T${time}`;
                 showsToCreate.push({
                     movie:movieId,
@@ -72,21 +70,21 @@ export const addShow = async(req,res)=>{
         }
         res.json({success:true,message:"Show added successfully"})
     }catch(err){
-        console.error(err);
-        res.json({success:false,message:err.message})
+        console.error("showController.addShow",err);
+        res.json({success:false,message:`Error addshow: ${err.message}`})
     }
 }
 
 //api to get all source froom the database
 export const getShows = async(req,res)=>{
     try{
-        const shows = (await Show.find({showDateTime:{$gte:new Date()}}).populate('movie')).sort((a, b) => a.showDateTime - b.showDateTime);
+        const shows = await Show.find({showDateTime:{$gte:new Date()}}).populate('movie').sort({showDateTime:1});
         const uniqueShows= new Set(shows.map(show => show.movie))
 
         res.json({success:true, shows:Array.from(uniqueShows)});
     }catch(err){
         console.log(err)
-        res.json({success:false,message:err.message})
+        res.json({success:false,message:`getShows: ${err.message}`})
     }
     
 }
@@ -110,5 +108,6 @@ export const getShow = async(req,res)=>{
         
     }catch(err){
         console.log(err)
+        res.json({success:false,message:`getShow: ${err.message}`})
     }
 }

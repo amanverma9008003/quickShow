@@ -8,16 +8,51 @@ import toast from 'react-hot-toast';
 
 const AddShow = () => {
     
-    const {axios , getToken , user, image_base_url} = useAppContext();
+    const {axios , getToken , user} = useAppContext();
     const [nowPLayingMovies, setNowPlayingMovies]=useState([]);
     const [selectedMovie, setSelectedMovie]=useState(null);
     const [dateTimeSelection, setDateTimeSelection]=useState({});
     const [dateTimeInput, setDateTimeInput]=useState('');
     const [showPrice, setShowPrice]=useState("");
+    //console.log(nowPLayingMovies)
+    const [addingShow, setAddingShow]=useState(false);
+
+    const handleSubmit = async () => {
+        try{
+            setAddingShow(true);
+
+            if(!selectedMovie || Object.keys(dateTimeSelection).length === 0 ||!showPrice){
+                return toast('Missing required Fields')
+            }
+            const showsInput = Object.entries(dateTimeSelection).map(([date,times]) => ({date,times}));
+
+            const payload = {
+                movieId:selectedMovie,
+                showsInput,
+                showPrice:Number(showPrice)
+            }
+            const {data} = await axios.post('api/show/add', payload, { headers:{ Authorization: `Bearer ${ await getToken()}`}});
+            if (data.success){
+                toast.success(data.message);
+                setSelectedMovie(null);
+                setDateTimeSelection({})
+                setShowPrice("")
+            }
+            else{
+                toast.error(data.message);
+            }
+        }catch(err)
+        {
+            console.log(err);
+            toast.error("Something went wrong, try Again");
+        }
+        setAddingShow(false);
+    }
 
     const fetchNowPlayingMovies = async () => {
         try{
-            const {data} = await axios.get('api/show/now-playing', { headers:{ Authorization: `Bearer ${ await getToken()}`}});
+            const {data} = await axios.get('api/show/now-playing');//{ headers:{ Authorization: `Bearer ${ await getToken ()}`
+            //console.log(data);
             if (data.success){
                 setNowPlayingMovies(data.movies);
             }
@@ -62,7 +97,7 @@ const AddShow = () => {
         }
     }, [user])
 
-    return nowPLayingMovies.length > 0 ? (
+    return nowPLayingMovies.length >= 0 ? (
     <>
         <Title text1='Add' text2='Shows' />
         <p className='mt-10 text-lg font-medium'>Now Playing Movies</p>
@@ -72,7 +107,7 @@ const AddShow = () => {
                     <div key={movie.id} className={`relative max-w-40 cursor-pointer group-hover:not-hover:opacity-40 hover:-translate-y-1 transition duration-300`} onClick={() => {
                         setSelectedMovie(movie.id);}}>
                         <div className='relative rounded-lg overflow-hidden'>
-                            <img src={image_base_url+movie.poster_path} alt="" className='w-full object-cover brightness-90' />
+                            <img src={"https://image.tmdb.org/t/p/original" + movie.poster_path} alt="" className='w-full object-cover brightness-90' />
                             <div className='text-sm flex items-center justify-between p-2 bg-black/70 w-full absolute bottom-0 left-0'>
                                 <p className='flex items-center gap-1 text-gray-400'>
                                     <StarIcon className='w-4 h-4 text-primary fill-primary' />
@@ -129,10 +164,10 @@ const AddShow = () => {
                 </ul>
             </div>
         )}
-        <button className='bg-primary text-white px-8 py-2 mt-6 rounded hover:bg-primary/90 transition-all cursor-pointer'>
+        <button onClick={handleSubmit} disabled={addingShow} className='bg-primary text-white px-8 py-2 mt-6 rounded hover:bg-primary/90 transition-all cursor-pointer'>
         Add Show</button>
     </>
-    ):<Loading />
+    ):<h1 className='mt-10 text-center'>No Now Playing Movies Found</h1>
 }
 
 export default AddShow

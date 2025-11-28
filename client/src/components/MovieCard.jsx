@@ -7,10 +7,10 @@ const MovieCard = ({movie}) => {
     const navigate = useNavigate();
     return (
         <div className='flex flex-col justify-between p-2 bg-gray-100 rounded-lg hover:-translate-y-1 hover:shadow-lg'>
-            <img onClick={() =>{navigate(`/movies/${movie._id}`); window.scrollTo(0,0) }} src={movie.backdrop_path} alt="" className='rounded-lg h-70 w-80 object-cover object-right-bottom cursor-pointer' />
+            <img onClick={() =>{navigate(`/movies/${movie._id}`); window.scrollTo(0,0) }} src={"https://image.tmdb.org/t/p/original" + movie.backdrop_path} alt="" className='rounded-lg h-70 w-80 object-cover object-right-bottom cursor-pointer' />
         
             
-            <p className='font-semibold mt-2 truncate' >{movie.title}</p>
+            <p className='font-semibold mt-2 truncate text-red-500' >{movie.title}</p>
             <p className='text-sm text-gray-400 mt-2'>
                 {new Date(movie.release_date).getFullYear()} * {movie.genres.slice(0,2).map(genre =>genre.name).join(" | ")} * {timeFormat(movie.runtime)}
             </p>

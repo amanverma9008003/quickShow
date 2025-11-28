@@ -1,25 +1,19 @@
 import React, { useState, useEffect } from'react';
-import { dummyShowsData } from '../../assets/assets';
 import Loading from '../../components/Loading';
 import Title from '../../components/admin/Title';
 import {dateFormat} from '../../lib/Dateformat'
+import { useAppContext } from '../../../context/AppContext';
 
 const ListShows = () => {
+    const {axios , getToken, user} = useAppContext();
     const [shows, setShows]=useState([]);
     const [loading, setLoading]=useState(true);
     
     const getAllShows = async () => {
         try{
-            setShows([{
-                movie:dummyShowsData[0],
-                showDateTime:"2025-06-30 10:00:00",
-                showPrice:58,
-                occupiedSeats:{
-                    A1:'user1',
-                    B1:"user2",
-                    C1:"user3"
-                }
-            }])
+            const {data}=await axios.get('/api/admin/all-shows',{headers:{Authorization: `Bearer ${ await getToken()}`}});
+            //nconsole.log(data.shows);
+            setShows(data.shows);
             setLoading(false);
         }
         catch(error){
@@ -28,8 +22,10 @@ const ListShows = () => {
     };
 
     useEffect(() => {
+        if(user){
         getAllShows();
-    }, []);
+        }
+    }, [user]);
 
     return !loading ?(
     <>
@@ -49,8 +45,8 @@ const ListShows = () => {
                         <tr key={index} className='border-b border-gray-200 bg-primary/5 even:bg-priary/10'>
                             <td className='p-2 pl-5'>{show.movie.title}</td>
                             <td className='p-2'>{dateFormat(show.showDateTime)}</td>
-                            <td className='p-2'>{Object.keys(show.occupiedSeats).length}</td>
-                            <td className='p-2'>&#8377;{show.showPrice * Object.keys(show.occupiedSeats).length}</td>
+                            <td className='p-2'>{/*(Object.keys(show.occupiedSeats).length)*/ '0'}</td>
+                            <td className='p-2'>&#8377;{show.showPrice }</td>
                         </tr>
                     ))}
                 </tbody>

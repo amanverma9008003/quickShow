@@ -1,10 +1,14 @@
 import { ChartLineIcon, PlayCircleIcon, ReceiptIndianRupee, StarIcon, UserIcon } from 'lucide-react';
 import { useState,useEffect } from 'react'
-import { dummyDashboardData } from '../../assets/assets';
 import Loading from '../../components/Loading';
 import Title from '../../components/admin/Title';
 import {dateFormat} from "../../lib/Dateformat";
+import { useAppContext } from '../../../context/AppContext';
+import toast from 'react-hot-toast';
 const Dashboard = () => {
+    
+    const {axios , getToken , user} = useAppContext();
+
     const [dashboardData, setDashboardData]=useState({
         totalBookings:0,
         totalRevenue:0,
@@ -22,13 +26,29 @@ const Dashboard = () => {
     ]
 
     const fetchDashboardData = async ()=>{
-        setDashboardData(dummyDashboardData)
-        setLoading(false)
+        try{
+            const {data} = await axios.get('/api/admin/dashboard', {headers: {Authorization: `Bearer ${ await getToken()}`}});
+            if(data.success){
+                setDashboardData(data.dashboardData);
+                setLoading(false);
+            }
+            else{
+                toast.error(dashboardCards, ` "dashboard": ${data.message}`);
+            }
+        }
+        catch(error){
+            console.log("dashboard error",error);
+            toast.error("Something went wrong in dashboard",error);
+        }
+        
     }
 
     useEffect(()=>{
-        fetchDashboardData();
-    },[]);
+        if(user){
+            fetchDashboardData();
+        }
+        
+    },[user]);
 
     return !loading ? (
         <>
@@ -50,7 +70,7 @@ const Dashboard = () => {
         <div className='relative flex fex-wrap gap-6 mt-4 max-w-5xl'>
             {dashboardData.activeShows.map((show)=>(
                 <div key={show._id} className='w-55 rounded-lg overflow-hidden h-full pb-3 bg-primary/10 border border-primary/20 hover:-translate-y-1 transition duration-300'>
-                    <img src={show.movie.poster_path} alt={show.movie.title} className='w-full h-60 object-cover' />
+                    <img src={"https://image.tmdb.org/t/p/original"+show.movie.poster_path} alt={show.movie.title} className='w-full h-60 object-cover' />
                     <p className='p-2 truncate font-medium'>{show.movie.title}</p>
                     <div className='flex items-center justify-between px-2'>
                         <p className='text-lg font-medium'>&#8377; {show.showPrice}</p>

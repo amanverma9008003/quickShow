@@ -14,33 +14,36 @@ export const AppProvider = ({children})=>{
     const [isAdmin, setIsAdmin] = useState(false);
     const [shows,setShows] = useState([])
     const [favouriteMovies,setFavouriteMovies] = useState([])
-    const {user} = useUser();
-    const {getToken} = useAuth();
+    const {user} = useUser()
+
+    //console.log(isSignedIn, user, isLoaded)
+    const {getToken} = useAuth()
     const location = useLocation();
     const navigate = useNavigate()
-    const image_base_url = import.meta.env.VITE_IMAGE_BASE_URL;
-    
-    //console.log(user);
+
+    //console.log(userId, sessionId, getToken, isLoaded, isSignedIn);
 
     const fetchIsAdmin = async ()=>{
-        
         try{
-            const data = await axios.get('/api/admin/is-admin', {headers: {Authorization: `Bearer ${ await getToken() }`}});//, {headers: {Authorization: `Bearer ${ await getToken() }`}}
-            //console.log(data,data.data['isAdmin'],data['isAdmin'])
-            setIsAdmin(data.data['isAdmin']);
+            const token = await getToken();
+            //console.log('Clerk token:', token);
+            const {data} = await axios.get(`/api/admin/is-admin`, {headers: {Authorization: `Bearer ${token}`}});
+            console.log(data)
+            setIsAdmin(data.isAdmin);
             
-            if(!data.data['isAdmin'] && location.pathname.startsWith('/admin')){
+            if(!data.isAdmin && location.pathname.startsWith('/admin')){
                 navigate('/');
                 toast.error('You are not authorized to admin dashboard');
             }
         }catch(err){
-            console.log(err);
+            console.log(err.message);
         }
     }
 
     const fetchShows = async ()=>{
         try{
-            const data = await axios.get('/api/show/all');
+            
+            const {data} = await axios.get('/api/show/all');
             console.log(data);
             if(data.success){
             setShows(data.shows);
@@ -55,13 +58,14 @@ export const AppProvider = ({children})=>{
 
     const fetchFavouriteMovies = async ()=>{
         try{
-            const data = await axios.get('/api/user/favourites', {headers: {Authorization: `Bearer ${ await getToken() }`}});
+            const token = await getToken()
+            const {data} = await axios.get('/api/user/favourites',{headers: {Authorization: `Bearer ${token}`}});//, {headers: {Authorization: ` ${ await getToken() }`}}
             console.log(data);
             if(data.success){
             setFavouriteMovies(data.movies);
             }
             else{
-                toast.error(data.message);
+                toast.error(` AppcontextbfetcchFavouriteMovies: ${data.message}`);
             }
         }catch(err){
             console.log(err);
@@ -83,8 +87,7 @@ export const AppProvider = ({children})=>{
         fetchIsAdmin,
         fetchShows,
         fetchFavouriteMovies,
-        isAdmin, user , getToken, navigate, shows, favouriteMovies,
-        image_base_url
+        isAdmin, user , getToken, navigate, shows, favouriteMovies
     };
 
     return (
