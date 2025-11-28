@@ -15,7 +15,7 @@ export const stripeWebhooks = async (req, res) => {
         
         );
     }catch(err){
-        console.log('Webhook signature verification failed.', err.message);
+        // console.log('Webhook signature verification failed.', err.message);
         return res.status(400).send(`Webhook Error: ${err.message}`);
     }
 
@@ -30,17 +30,17 @@ export const stripeWebhooks = async (req, res) => {
                     const {bookingId} = session.metadata.bookingId;
                     //Update booking status to paid
                     await Booking.findByIdAndUpdate(bookingId, {isPaid: true, paymentLink:" " });
-                    console.log(`Booking ${bookingId} paid successfully`);
+                    //console.log(`Booking ${bookingId} paid successfully`);
                 }
                 break;
 
             default:
-                console.log(`Unhandled event type ${event.type}`);
+                //console.log(`Unhandled event type ${event.type}`);
                 break;
         }
         res.json({received: true});
     }catch(err){
-        console.log(`Error processing webhook event: ${err.message}`);
+        //console.log(`Error processing webhook event: ${err.message}`);
         return res.status(400).send(`Webhook Error: ${err.message}`);
     }
 }

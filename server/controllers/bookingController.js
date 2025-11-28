@@ -14,7 +14,7 @@ const checkSeatAvailability = async (showId,selectedSeats) => {
         const isAnySeatTaken = selectedSeats.some(seat => occupiedSeats[seat]);
         return !isAnySeatTaken;
     }catch(err){
-        console.log("bookingController:checkSeatAvailability",err.message);
+        //console.log("bookingController:checkSeatAvailability",err.message);
         return false;
     }
 }
@@ -22,12 +22,12 @@ const checkSeatAvailability = async (showId,selectedSeats) => {
 export const createBooking = async (req,res) => {
     try{
         const { userId } = getAuth(req);
-        console.log(userId, getAuth(req));
+        //console.log(userId, getAuth(req));
 
         const {showId,selectedSeats} = req.body;
         const {origin}=req.headers;
 
-        console.log(origin);
+        //console.log(origin);
         //check if the seat is available or not
         const isAvailable = await checkSeatAvailability(showId,selectedSeats);
         if(!isAvailable){
@@ -80,7 +80,7 @@ export const createBooking = async (req,res) => {
 
         res.json({success:true,url:session.url});
     }catch(err){
-        console.log(err);
+        //console.log(err);
         res.json({success:false,message:`createBooking: ${err.message}`})
     }
 }
@@ -89,7 +89,7 @@ export const getOccupiedSeats = async (req, res) => {
     try {
         const { showId } = req.params;
         // Guard: check for valid showId
-        console.log("showId", showId);
+        //console.log("showId", showId);
         if (!showId || typeof showId !== 'string' || showId === 'undefined') {
             return res.status(400).json({ success: false, message: 'Show ID is required and must be valid.' });
         }
@@ -100,7 +100,7 @@ export const getOccupiedSeats = async (req, res) => {
         const occupiedSeats = Object.keys(showData.occupiedSeats || {});
         res.json({ success: true, occupiedSeats });
     } catch (err) {
-        console.log(err);
+        //console.log(err);
         res.json({ success: false, message: `getOccupiedSeats: ${err.message}` });
     }
 };

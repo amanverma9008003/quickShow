@@ -51,7 +51,7 @@ const AddShow = () => {
 
     const fetchNowPlayingMovies = async () => {
         try{
-            const {data} = await axios.get('api/show/now-playing');//{ headers:{ Authorization: `Bearer ${ await getToken ()}`
+            const {data} = await axios.get('api/show/now-playing', { headers:{ Authorization: `Bearer ${ await getToken ()}`}});//{ headers:{ Authorization: `Bearer ${ await getToken ()}`
             //console.log(data);
             if (data.success){
                 setNowPlayingMovies(data.movies);

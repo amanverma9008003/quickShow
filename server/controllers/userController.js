@@ -14,7 +14,7 @@ export const getUserBookings = async (req, res) => {
         }).sort({ createdAt: -1 });
         res.json({ success: true, bookings });
     } catch (err) {
-        console.log("userController.getUserBookings", err);
+        // console.log("userController.getUserBookings", err);
         res.json({ success: false, message: `getUserBookings failed:${err.message}` });
     }
 };
@@ -23,7 +23,7 @@ export const addFavourite = async (req, res) => {
     try {
         const { movieId } = req.body;
         const { userId } = getAuth(req);
-        console.log("addfavourite", userId, movieId);
+       // console.log("addfavourite", userId, movieId);
         if (!userId) {
             return res.json({ success: false, message: "User is not authenticated." });
         }
@@ -42,7 +42,7 @@ export const addFavourite = async (req, res) => {
         await clerkClient.users.updateUserMetadata(userId, { privateMetadata: user.privateMetadata });
         res.json({ success: true, message: "Favourite updated successfully" });
     } catch (err) {
-        console.log(err);
+        // console.log(err);
         res.json({ success: false, message: `addfavourite failed: ${err.message}` });
     }
 };
@@ -50,7 +50,7 @@ export const addFavourite = async (req, res) => {
 export const getFavourites = async (req, res) => {
     try {
         const { userId } = getAuth(req);
-        console.log("getfavourites", userId, getAuth(req));
+        // console.log("getfavourites", userId, getAuth(req));
         if (!userId) {
             return res.json({ success: false, error: "Unauthorized: No user ID found in get favourites request." });
         }
@@ -60,7 +60,7 @@ export const getFavourites = async (req, res) => {
         const movies = await Movie.find({ _id: { $in: favourites } });
         res.json({ success: true, movies });
     } catch (err) {
-        console.log(err);
+        // console.log(err);
         res.json({ success: false, message: `getFavourites failed: ${err.message}` });
     }
 };

@@ -4,9 +4,9 @@ import {isAdmin, getDashboardData, getAllShows, getAllBookings } from "../contro
 
 const adminRouter = express.Router();
 
-adminRouter.get("/is-admin",isAdmin ); //protection,
-adminRouter.get("/dashboard", getDashboardData ); //protection,
-adminRouter.get("/all-shows", getAllShows ); //protection,
-adminRouter.get("/all-bookings", getAllBookings ); //protection,
+adminRouter.get("/is-admin",protection,isAdmin ); //protection,
+adminRouter.get("/dashboard",protection, getDashboardData ); //protection,
+adminRouter.get("/all-shows", protection,getAllShows ); //protection,
+adminRouter.get("/all-bookings",protection, getAllBookings ); //protection,
 
 export default adminRouter;

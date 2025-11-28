@@ -22,7 +22,7 @@ export const getDashboardData = async (req,res)=>{
 
         res.json({success:true, dashboardData})
     }catch(err){
-        console.log("getDashboardData: ", err)
+       // console.log("getDashboardData: ", err)
         res.json({success:false, error:`getDashboardData: ${err.name}`})
     }
 }
@@ -32,7 +32,7 @@ export const getAllShows = async (req,res)=>{
         const shows = await Show.find({showDateTime:{$gte: new Date()}}).populate('movie').sort({showDateTime:1});
         res.json({success:true, shows})
     }catch(err){
-        console.log("getAllShows: ", err)
+        //console.log("getAllShows: ", err)
         res.json({success:false, error: `getAllShows: ${err.name}`})
     }
 }
@@ -46,7 +46,7 @@ export const getAllBookings = async (req,res)=>{
         
         res.json({success:true, bookings})
     }catch(err){
-        console.log("getAllBookings: ", err)
+        // console.log("getAllBookings: ", err)
         res.json({success:false,message:`getAllBookings: ${err.message}`})
     }
 }
