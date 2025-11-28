@@ -26,8 +26,8 @@ export const createBooking = async (req,res) => {
 
         const {showId,selectedSeats} = req.body;
         const {origin}=req.headers;
-
-        //console.log(origin);
+        
+        console.log(selectedSeats);
         //check if the seat is available or not
         const isAvailable = await checkSeatAvailability(showId,selectedSeats);
         if(!isAvailable){
@@ -41,7 +41,7 @@ export const createBooking = async (req,res) => {
             user: userId,
             show: showId,
             amount: showData.showPrice*selectedSeats.length,
-            bookingSeats: selectedSeats
+            bookedSeats: selectedSeats
         })
 
         selectedSeats.map((seat)=>{

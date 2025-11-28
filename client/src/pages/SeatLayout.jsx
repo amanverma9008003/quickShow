@@ -90,7 +90,8 @@ function SeatLayout(){
             if(!selectedTime || !selectedSeats.length) return toast.error("Please select seats and a time to book tickets");
             const {data}= await axios.post(`/api/booking/create`,{showId: selectedTime.showId,selectedSeats},{headers: {Authorization: `Bearer ${ await getToken() }`}});
             if(data.success){
-                window.location.href = "https://buy.stripe.com/test_00w5kDcHa8YRdMc6Hb5c401";
+                window.location.href = data.url;
+                
             }else{
                 toast.error(data.message);
             }
@@ -101,9 +102,6 @@ function SeatLayout(){
             }
     }
     
-    const changecolor = (item) =>{
-            setSelectedTime(item)
-    }
     useEffect(() => {
         getShow()
     }, [id]);
@@ -111,7 +109,6 @@ function SeatLayout(){
     useEffect(() => {
         if(selectedTime){
             getOccupiedSeats()
-            changecolor(selectedTime);
         }
     }, [selectedTime]);
 
@@ -124,10 +121,10 @@ function SeatLayout(){
             <p className="text-lg font-semibold px-6">Available Timings</p>
             <div className="mt-5 space-y-1">
                 {show.dateTime[date].map((item)=>(
-                    <button key={item.time} onClick={()=> changecolor(item)} className={`flex items-center gap-2 px-6 py-2 w-max rounded-r-md cursor-pointer hover:bg-primary/20 transition ${ selectedTime === item.time && "bg-primary/80 text-white"}` }>
+                    <div key={item.time} onClick={()=> setSelectedTime(item)} className={`flex items-center gap-2 px-6 py-2 w-max rounded-r-md cursor-pointer  transition  ${ selectedTime?.time === item.time ? "bg-primary/80 text-white" : "hover:bg-primary/20"}` }>
                         <ClockIcon className="w-4 h-4" />
                         <p className="text-sm">{isoTimeformat(item.time)}</p>
-                    </button>
+                    </div>
                 ))}
             </div>
             </div>

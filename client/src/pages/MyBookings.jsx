@@ -3,6 +3,7 @@ import Loading from '../components/Loading';
 import  timeFormat  from '../lib/timeFormat.js';
 import {dateFormat} from '../lib/Dateformat.js';
 import { useAppContext } from '../../context/AppContext.jsx';
+import { Link } from 'react-router-dom';
 function MyBookings(){
     const [bookings,setBooking]=useState([]);
     const [isLoading,setISLoading]=useState(true);
@@ -10,12 +11,13 @@ function MyBookings(){
         
     const getMyBookings = async () =>{
         try{
-            const {data}= await axios.get('/api/bookings/mybookings',{
+            const {data}= await axios.get('/api/user/bookings',{
                 headers: {
                     'Authorization': `Bearer ${await getToken()}`
                 }
             });
             if(data.success){
+                console.log("mybookings",data.bookings);
             setBooking(data.bookings);
             }
         }catch(error){
@@ -47,7 +49,7 @@ function MyBookings(){
 
                         <div className='flex flex-col md:flex-end p-4'>
                         <p className='text-2xl font-semibold mb-3'>&#8377; {booking.amount}</p>
-                        {!booking.isPaid && <button className='bg-primary px-4 py-1.5 mb-3 text-sm rounded-full font-medium cursor-pointer'>Pay Now</button>}
+                        {!booking.isPaid && <Link to={booking.paymentLink} className='bg-primary px-4 py-1.5 mb-3 text-sm rounded-full font-medium cursor-pointer'>Pay Now</Link>}
                         <div className='text-sm'>
                             <p><span className='text-gray-400'>Total Tickets:</span> {booking.bookedSeats.length}</p>
                             <p><span className='text-gray-400'>Seat Number:</span> {booking.bookedSeats.join(', ')}</p>
